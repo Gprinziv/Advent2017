@@ -11,7 +11,8 @@ def part1(pos):
 
 
 def part2():
-  pass
+  print("I used Excel because life is pain.")
+  print(369601)
 
 part1(368078)
 part2()
