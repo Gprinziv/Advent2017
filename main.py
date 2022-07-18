@@ -1,69 +1,50 @@
+from math import floor
 
-
-def test():
-  with open("test") as f:
-    inputs = [int(i) for i in f.readline().split(", ")]
-
-  skip, ptr = 0, 0
-  rope = [i for i in range(5)]
-  for input in inputs:
-    if input + ptr >= len(rope):
-      wrapPtr = (input+ptr)%len(rope)
-      invert = (rope[ptr:] + rope[:wrapPtr])[::-1]
-      rope = invert[-wrapPtr:] + rope[wrapPtr:ptr] + invert[:-wrapPtr]
-    else:
-      rope = rope[:ptr] + rope[ptr:ptr+input][::-1] + rope[ptr+input:]
-
-    ptr = (ptr + input + skip) % len(rope)
-    skip += 1
-  print(rope[0] * rope[1])
-
-def part1():
-  with open("input") as f:
-    inputs = [int(i) for i in f.readline().split(",")]
-
-  skip, ptr = 0, 0
-  rope = [i for i in range(256)]
-  for input in inputs:
-    if input + ptr >= len(rope):
-      wrapPtr = (input+ptr)%len(rope)
-      invert = (rope[ptr:] + rope[:wrapPtr])[::-1]
-      rope = invert[-wrapPtr:] + rope[wrapPtr:ptr] + invert[:-wrapPtr]
-    else:
-      rope = rope[:ptr] + rope[ptr:ptr+input][::-1] + rope[ptr+input:]
-
-    ptr = (ptr + input + skip) % len(rope)
-    skip += 1
-  print(rope[0] * rope[1])
-
-def part2():
-  with open("input") as f:
-    inputs = [ord(i) for i in f.readline()] + [17, 31, 73, 47, 23]
-
-  skip, ptr = 0, 0
-  rope = [i for i in range(256)]
-  for i in range(64):
-    for input in inputs:
-      if input + ptr >= len(rope):
-        wrapPtr = (input+ptr)%len(rope)
-        invert = (rope[ptr:] + rope[:wrapPtr])[::-1]
-        rope = invert[-wrapPtr:] + rope[wrapPtr:ptr] + invert[:-wrapPtr]
+#s[0]:(-)N -(+)S
+#s[1]:(-)NE-(+)SW
+#s[2]:(-)SE-(+)NW
+def getSteps(steps):
+  # 
+  if (steps[1] < 0) ^ (steps[2] > 0):
+    ew = abs(steps[1] + steps[2])
+    ns = (steps[2] - steps[1]) * (1 if steps[1] > 0 else -1)
+    if (steps[0] < 0) ^ (ns < 0):
+      if abs(steps[0]) < abs(ns):
+        total = ew
       else:
-        rope = rope[:ptr] + rope[ptr:ptr+input][::-1] + rope[ptr+input:]
+        total = abs(steps[0])
+    else:
+      total = ew + steps[0]
+    return total
 
-      ptr = (ptr + input + skip) % len(rope)
-      skip += 1
+  else:
+    return steps[0] + max(abs(s) for s in steps[1:]) - abs(steps[1] + steps[2])
 
-  fin=""
-  for i in range(16):
-    exOr = 0
-    for r in rope[i*16:(i+1)*16]:
-      exOr ^= r
-    fin+= hex(exOr)[2:]
-  print(fin)
+def part1(inputs):
+  steps = [0, 0, 0]
+  directions = {"se": [2, -1], "ne": [1, -1], "n": [0, -1], "nw": [2, 1], "sw": [1, 1], "s": [0, 1]}
+  for input in inputs:
+    addr, val = directions[input]
+    steps[addr] += val
 
+  print(getSteps(steps))    
 
+def part2(inputs):
+  steps = [0, 0, 0]
+  directions = {"se": [2, -1], "ne": [1, -1], "n": [0, -1], "nw": [2, 1], "sw": [1, 1], "s": [0, 1]}
+  max = 0
 
-test()
-part1()
-part2()
+  for input in inputs:
+    addr, val = directions[input]
+    steps[addr] += val
+    numSteps = getSteps(steps)
+    if numSteps > max:
+      max = numSteps
+
+  print(max)
+
+with open("input") as f:
+  inputs = f.read().split(",")
+
+#part1(inputs)
+part2(inputs)
