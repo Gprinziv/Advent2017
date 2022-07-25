@@ -48,30 +48,30 @@ def makeDisk():
       f.write(line + "\n")
     f.write(disk[-1])
 
-def convertRegion(y, x):
+def convertRegion(disk, y, x):
   queue = [[y, x]]
   while queue:
-    pass
-    #If disk[y][x] == 1:
-    #  disk[y][x] = "."
-    #  queue.append([y+-1, x+-1])
-    # Convert the space to a "." and then add all 4 adjacencies to the queue.
+    cury, curx = queue.pop(0)
+    try:
+      if disk[cury][curx] == 1:
+        disk[cury][curx] = 0
+        queue += [[cury, curx+1], [cury, curx-1], [cury+1, curx], [cury-1, curx]]
+    except IndexError:
+      continue
 
-#Go into the array provided by disk file, Use a queue and convert 1s to "."s as you find a new region.
 def part2():
   with open("disk") as f:
-    disk = [i.strip() for i in f.readlines()]
+    disk = [[int(i) for i in line.strip()] for line in f.readlines()]
 
   count = 0
   for y in range(128):
     for x in range(128):
-      if disk[y][x] == '1':
+      if disk[y][x] == 1:
         count += 1
-        convertRegion(y, x)
-
+        convertRegion(disk, y, x)
+  
   print(count)
-
 
 #part1()
 #makeDisk()
-part2()
+part2()  
